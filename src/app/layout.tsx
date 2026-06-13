@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/components/Providers";
 
-const raleway = Raleway({subsets:['latin'],variable:'--font-sans'});
+const raleway = Raleway({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +36,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
-        </body>
+      </body>
     </html>
   );
 }

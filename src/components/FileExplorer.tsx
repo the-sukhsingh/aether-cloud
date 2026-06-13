@@ -356,9 +356,23 @@ export default function FileExplorer({
                     )}
                   </div>
 
-                  {/* Drag Handle Overlay Icon indicator when hover */}
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 transition-opacity">
-                    <Move className="size-3 text-muted-foreground/60" />
+                  {/* Options & Drag handle */}
+                  <div
+                    className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      className="size-5 p-0 border border-border bg-background hover:bg-muted rounded-none"
+                      onClick={() => onFileClick(item)}
+                      title="Manage options"
+                    >
+                      <MoreVertical className="size-3" />
+                    </Button>
+                    <div className="opacity-60">
+                      <Move className="size-3 text-muted-foreground/60" />
+                    </div>
                   </div>
                 </div>
               );
@@ -418,9 +432,20 @@ export default function FileExplorer({
                         {item.isFolder ? "Folder" : item.name.split(".").pop() || "File"}
                       </td>
 
-                      {/* Drag move icon */}
-                      <td className="py-2.5 px-4 text-right">
-                        <Move className="size-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/30 shrink-0 inline-block transition-colors" />
+                      {/* Options & Drag handle */}
+                      <td className="py-2.5 px-4 text-right font-semibold" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            variant="ghost"
+                            size="icon-xs"
+                            className="size-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity border border-border rounded-none bg-background"
+                            onClick={() => onFileClick(item)}
+                            title="Manage options"
+                          >
+                            <MoreVertical className="size-3.5" />
+                          </Button>
+                          <Move className="size-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/30 shrink-0 inline-block transition-colors" />
+                        </div>
                       </td>
                     </tr>
                   );

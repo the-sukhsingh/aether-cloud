@@ -306,6 +306,9 @@ export default function Home() {
       onDrop={handleDrop}
       className="flex-1 flex flex-col bg-background text-foreground"
     >
+      <div className="absolute inset-0 z-200 flex justify-center items-center pointer-events-none">
+        
+      </div>
       {/* Top Navbar */}
       <header className="flex items-center justify-between border-b border-border py-3 px-6 shrink-0 bg-background select-none">
         {/* App Title */}

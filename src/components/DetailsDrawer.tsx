@@ -137,6 +137,7 @@ export default function DetailsDrawer({
   };
 
   const formatSize = (bytes: number) => {
+    if (file?.isFolder) return "--";
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB"];

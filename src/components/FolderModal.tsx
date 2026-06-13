@@ -6,6 +6,25 @@ import { X, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { noti } from "noti-toast";
 
+type Direction = "top" | "bottom" | "left" | "right";
+
+const INSET_MAP: Record<Direction, string> = {
+  top: "inset(0 0 100% 0)",
+  bottom: "inset(100% 0 0 0)",
+  left: "inset(0 100% 0 0)",
+  right: "inset(0 0 0 100%)",
+};
+
+function getRandomDirections() {
+  const directions: Direction[] = ["top", "bottom", "left", "right"];
+  const bg = directions[Math.floor(Math.random() * directions.length)];
+  let dialog = directions[Math.floor(Math.random() * directions.length)];
+  while (dialog === bg) {
+    dialog = directions[Math.floor(Math.random() * directions.length)];
+  }
+  return { bg, dialog };
+}
+
 interface FolderModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,6 +35,7 @@ export default function FolderModal({ isOpen, onClose, onCreate }: FolderModalPr
   const [folderName, setFolderName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [directions, setDirections] = useState(getRandomDirections);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,12 +43,22 @@ export default function FolderModal({ isOpen, onClose, onCreate }: FolderModalPr
       setError("");
       setIsSubmitting(false);
     }
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    }
+
+    addEventListener("keydown", handleKey);
+    return () => removeEventListener("keydown", handleKey)
+
   }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = folderName.trim();
-    
+
     if (!trimmed) {
       setError("Folder name cannot be empty");
       return;
@@ -53,26 +83,54 @@ export default function FolderModal({ isOpen, onClose, onCreate }: FolderModalPr
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={() => setDirections(getRandomDirections())}>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs">
+        <motion.div
+          initial={{
+            clipPath: INSET_MAP[directions.bg]
+          }}
+          animate={{
+            clipPath: "inset(0 0 0 0)"
+          }}
+          exit={{
+            clipPath: INSET_MAP[directions.bg],
+            transition: {
+              delay: 0.15
+            }
+          }}
+          transition={{
+            duration: 0.15,
+            ease: "linear"
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-primary/20 backdrop-blur-xs"
+        >
           <div className="absolute inset-0" onClick={() => !isSubmitting && onClose()} />
-
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            initial={{
+              clipPath: INSET_MAP[directions.dialog]
+            }}
+            animate={{
+              clipPath: "inset(0 0 0 0)",
+              transition: {
+                delay: 0.15
+              }
+            }}
+            exit={{
+              clipPath: INSET_MAP[directions.dialog]
+            }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="relative z-10 w-full max-w-sm border border-border bg-background p-6 rounded-none flex flex-col gap-5"
+            className="relative w-full max-w-sm p-2 rounded-none"
           >
+            <div className="absolute -inset-8 z-[-1] [--pattern-fg:var(--color-primary)] dark:[--pattern-fg:#ffffff] bg-[repeating-linear-gradient(315deg,var(--pattern-fg)_0,var(--pattern-fg)_1px,transparent_0,transparent_50%)] bg-size-[10px_10px] bg-fixed opacity-40" />
+            <div className="bg-background p-6 border border-border flex flex-col gap-5 ">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <FolderPlus className="size-4 text-muted-foreground" />
+                <FolderPlus className="size-6 text-muted-foreground" />
                 <h2 className="text-sm font-semibold tracking-wider uppercase">New Folder</h2>
               </div>
               {!isSubmitting && (
-                <Button variant="ghost" size="icon" className="rounded-none border border-border" onClick={onClose}>
+                <Button variant="ghost" size="icon-xs" className="rounded-none border border-border" onClick={onClose}>
                   <X className="size-4" />
                 </Button>
               )}
@@ -124,8 +182,9 @@ export default function FolderModal({ isOpen, onClose, onCreate }: FolderModalPr
                 </Button>
               </div>
             </form>
+            </div>
           </motion.div>
-        </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
