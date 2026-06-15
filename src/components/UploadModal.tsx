@@ -78,6 +78,17 @@ export default function UploadModal({
       setIsUploading(false);
       setUploadProgress(0);
     }
+
+    
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    }
+
+    addEventListener("keydown", handleKey);
+    return () => removeEventListener("keydown", handleKey)
+
   }, [isOpen]);
 
   const addFiles = (newFiles: FileList | null) => {
